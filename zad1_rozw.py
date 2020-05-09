@@ -2,48 +2,30 @@ import socket
 import json
 
 HOST = "172.104.229.108"
-PORT = 9001
+PORT = 5003
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
 
-    info = json.dumps({"username": myname})
+    info = json.dumps({"username": "myname"})
     s.sendall(str.encode(info))
-    data = s.recv(2048)
+    data = s.recv(1024)
 
     msg = data.decode()
     print('Server reply:', msg)
 
-
-    try:
-        json_data = json.loads(msg)
-
-        if json_data["session_id"]:
-            print("session open")
-            mysession = json_data["session_id"]
-        else:
-            print("[ERR] session not open")
-            exit(1)
-
-
-    except Exception as e:
-        print(e)
-        print(msg)
-        print("[ERR] Error parsing server reply")
-        exit(1)
-
-
-    print("[INFO] sending data to server")
+    json_data = json.loads(msg)
+    print("My session id:", json_data["session_id"])
 
 
     msg = json.dumps({"request": "ALL_ROOMS"})
     s.sendall(str.encode(msg))
-    response = s.recv(2048).decode()
+    response = s.recv(1024).decode()
     print(response)
 
-    msg = json.dumps({"request": "CREATE_ROOM", "data": {"name": "room1", "size": 5}})
+    msg = json.dumps({"request": "CREATE_ROOM", "data": "room1"})
     s.sendall(str.encode(msg))
-    response = s.recv(2048).decode()
+    response = s.recv(1024).decode()
     print(response)
 
     s.close()
